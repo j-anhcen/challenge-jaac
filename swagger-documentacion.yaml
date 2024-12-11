@@ -1,0 +1,259 @@
+openapi: 3.0.3
+info:
+  title: API Reto AWS Challenge
+  description: 
+    Este API administra información de los personajes y planes de la serie Star Wars, permite almacenar información de manera permanente y de acceso rápido (memoria caché), para ello hace uso de una base de datos DynamoDB.
+  contact:
+    email: j.anhuaman@gmail.com
+  version: 1.0.0
+servers:
+  - url: https://73up929qvd.execute-api.us-east-1.amazonaws.com/dev
+tags:
+  - name: login
+    description: Identifica al usuario
+  - name: fusionados
+    description: Extrae y guarda información de personajes y mundos.
+  - name: historial
+    description: Consulta de personajes y mundos.
+paths:
+  /login:
+    post:
+      tags:
+      - login
+      summary: Generar el token de identificación
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BodyLoginPost'
+        required: true
+      responses:
+        200:
+          description: La información del usuario se procesó correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoLoginPost'
+        400:
+          $ref: '#/components/responses/BadLoginRequest'
+
+  /fusionados/{id_personaje}:
+    get:
+      tags:
+      - fusionados
+      summary: Obtiene y guarda la infomación del personaje y su mundo.
+      parameters:
+      - $ref: '#/components/parameters/token'
+      - name: id_personaje
+        in: path
+        description: Identificador del personaje a obtener
+        required: true
+        schema:
+          type: string
+        
+      responses:
+        200:
+          description: La información se procesó correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoFusionGet'
+        400:
+          $ref: '#/components/responses/BadFusionRequest'
+
+  /historial:
+    get:
+      tags:
+      - historial
+      summary: Busca información almacenada en la base de datos
+      parameters:
+      - $ref: '#/components/parameters/token'
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Lista de personajes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExitoHistorialGet'
+        400:
+          $ref: '#/components/responses/BadHistorialRequest'
+
+components:
+  responses:
+    BadLoginRequest:
+      description: Formato incorrecto de email o no proporcionado
+      
+    BadFusionRequest:
+      description: Información errónea por parte del usuario o sin autorización
+
+    BadHistorialRequest:
+      description: Información errónea por parte del usuario o sin autorización
+      
+    ServerError:
+      description: Error en servidor
+        
+
+  parameters:
+    token:
+      in: header
+      name: token
+      description: Token de autenticación en API.
+      required: true
+      schema:
+        type: string
+    
+
+  schemas:
+    BodyLoginPost:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email del usuario
+
+    ExitoLoginPost:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Token de identificación para los otros endpoints
+
+    ExitoFusionGet:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del personaje
+        height:
+          type: string
+          description: Altura
+        mass:
+          type: string
+          description: Masa
+        hair_color:
+          type: string
+          description: Color de pelo
+        skin_color:
+          type: string
+          description: Color de piel
+        eye_color:
+          type: string
+          description: Color de ojos
+        birth_year:
+          type: string
+          description: Año de nacimiento
+        gender:
+          type: string
+          description: Género
+        homeworld:
+          type: string
+          description: Mundo natal
+        films:
+          type: array
+          items:
+            type: string
+          description: Lista de films
+        species:
+          type: string
+          description: Especies
+        vehicles:
+          type: array
+          items:
+            type: string
+          description: Lista de vehículos
+        starships:
+          type: array
+          items:
+            type: string
+          description: Lista de naves espaciales
+        created:
+          type: string
+          description: Fecha de creación
+        edited:
+          type: string
+          description: Fecha de edición 
+        url:
+          type: string
+          description: Url de su ubicación
+        homeworld_detail:
+          type: object
+          properties:
+            name:
+              type: string
+            rotation_period:
+              type: string
+            diameter:
+              type: string
+            climate:
+              type: string
+            gravity:
+              type: string
+            terrain:
+              type: string
+            surface_water:
+              type: string
+            population:
+              type: string
+            residents:
+              type: array
+              items:
+                type: string
+            films:
+              type: array
+              items:
+                type: string
+            created:
+              type: string
+            edited:
+              type: string
+            url:
+              type: string
+          description: Detalles del mundo natal 
+
+    ExitoHistorialGet:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          height:
+            type: string
+          mass:
+            type: string
+          hair_color:
+            type: string
+          skin_color:
+            type: string
+          eye_color:
+            type: string
+          birth_year:
+            type: string
+          gender:
+            type: string
+          homeworld:
+            type: string
+          films:
+            type: array
+            items:
+              type: string
+          species:
+            type: string
+          vehicles:
+            type: array
+            items:
+              type: string
+          starships:
+            type: array
+            items:
+              type: string
+          created:
+            type: string
+          edited:
+            type: string
+          url:
+            type: string
